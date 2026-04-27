@@ -1,17 +1,16 @@
 local Workspace = require("lazydev.workspace")
-local plugins = require("lazy.core.config").plugins
 
 local M = {}
 
 function M.setup()
-  local dev_paths = {}
-  for _, plugin_spec in pairs(plugins) do
-    if plugin_spec.dev then
-      table.insert(dev_paths, plugin_spec.dir)
-    end
+  local ok, LazyConfig = pcall(require, "lazy.core.config")
+  if not ok then
+    return
   end
-  for _, path in pairs(dev_paths) do
-    Workspace.global():add(path)
+  for _, plugin_spec in pairs(LazyConfig.plugins or {}) do
+    if plugin_spec.dev and type(plugin_spec.dir) == "string" then
+      Workspace.global():add(plugin_spec.dir)
+    end
   end
 end
 
