@@ -149,6 +149,10 @@ function M:add(path)
   if Config.lua_root and not path:find("/lua/?$") and vim.uv.fs_stat(path .. "/lua") then
     path = path .. "/lua"
   end
+  -- check again for edge case
+  if path == self.root then
+    return
+  end
   if not vim.tbl_contains(self.library, path) then
     table.insert(self.library, path)
     if self.root ~= M.GLOBAL then
