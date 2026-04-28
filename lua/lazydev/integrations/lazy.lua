@@ -2,6 +2,9 @@ local Workspace = require("lazydev.workspace")
 
 local M = {}
 
+---Setup lazy.nvim integration.
+---Scans lazy.nvim plugins and adds dev plugin directories to workspace.
+---@return nil
 function M.setup()
   local ok, LazyConfig = pcall(require, "lazy.core.config")
   if not ok then
