@@ -141,11 +141,15 @@ function M:add(path)
 
   path = vim.uv.fs_realpath(path) or path
   path = Util.norm(path) -- normalize again
+  -- don't add workspace root itself (LuaLS indexes it already)
+  if path == self.root then
+    return
+  end
   -- append /lua if it exists
   if Config.lua_root and not path:find("/lua/?$") and vim.uv.fs_stat(path .. "/lua") then
     path = path .. "/lua"
   end
-  if path ~= self.root and not vim.tbl_contains(self.library, path) then
+  if not vim.tbl_contains(self.library, path) then
     table.insert(self.library, path)
     if self.root ~= M.GLOBAL then
       vim.schedule(function()
