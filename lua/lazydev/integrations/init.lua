@@ -8,6 +8,7 @@ M.p2i = {
   ["nvim-cmp"] = "cmp",
   ["coq_nvim"] = "coq",
   ["nvim-lspconfig"] = "lspconfig",
+  ["lazy.nvim"] = "lazy",
 }
 
 -- integration to plugin

@@ -150,6 +150,8 @@ local defaults = {
     cmp = true,
     -- same, but for Coq
     coq = false,
+    -- auto-add lazy.nvim's 'dev = true' plugins to workspace
+    lazy = true,
   },
   ---@type boolean|(fun(root:string):boolean?)
   enabled = function(root_dir)
