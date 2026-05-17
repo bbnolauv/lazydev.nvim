@@ -85,6 +85,36 @@ function M.on_workspace_configuration(err, params, ctx, cfg)
   return response
 end
 
+--- Request diagnostics for a single buffer or all attached buffers.
+--- emmylua_ls sends workspace/diagnostic/refresh after didChangeConfiguration,
+--- but Neovim does not re-request textDocument/diagnostic for open buffers
+--- in response, so we actively pull diagnostics.
+---@param client vim.lsp.Client
+---@param bufnr? number
+---@param delay? number
+function M.request_diagnostics(client, bufnr, delay)
+  if not client:supports_method("textDocument/diagnostic") then
+    return
+  end
+  delay = delay or 300
+  local identifier = vim.tbl_get(client.server_capabilities or {}, "diagnosticProvider", "identifier")
+  vim.defer_fn(function()
+    if not client or client:is_stopped() then
+      return
+    end
+    local buffers = bufnr and { bufnr } or vim.tbl_keys(client.attached_buffers)
+    for _, buf in ipairs(buffers) do
+      if vim.api.nvim_buf_is_valid(buf) then
+        local params = { textDocument = vim.lsp.util.make_text_document_params(buf) }
+        if identifier then
+          params.identifier = identifier
+        end
+        client:request("textDocument/diagnostic", params, nil, buf)
+      end
+    end
+  end, delay)
+end
+
 ---@param client vim.lsp.Client
 function M.update(client)
   M.assert(client)
@@ -97,6 +127,7 @@ function M.update(client)
       settings = { Lua = {} },
     })
   end
+  M.request_diagnostics(client, nil)
 end
 
 return M
