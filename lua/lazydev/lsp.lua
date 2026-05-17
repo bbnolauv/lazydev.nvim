@@ -104,7 +104,7 @@ function M.request_diagnostics(client, bufnr, delay)
     end
     local buffers = bufnr and { bufnr } or vim.tbl_keys(client.attached_buffers)
     for _, buf in ipairs(buffers) do
-      if vim.api.nvim_buf_is_valid(buf) then
+      if vim.api.nvim_buf_is_valid(buf) and vim.lsp.buf_is_attached(buf, client.id) then
         local params = { textDocument = vim.lsp.util.make_text_document_params(buf) }
         if identifier then
           params.identifier = identifier
